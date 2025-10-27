@@ -1,0 +1,218 @@
+# Enterprise HRMS Platform
+
+A modern, intelligent, and scalable Human Resource Management System with AI-powered features for recruitment, performance tracking, payroll management, and predictive analytics.
+
+## Features
+
+### Core HRMS Modules
+- **Employee Management** - Complete employee lifecycle management with profiles, departments, and organizational hierarchy
+- **Attendance Tracking** - Real-time attendance monitoring with check-in/check-out functionality
+- **Payroll Management** - Automated salary processing with deductions, allowances, and tax calculations
+- **Performance Tracking** - Comprehensive performance reviews and goal management
+
+### AI-Powered Features
+- **Resume Screening** - Automated candidate evaluation with AI scoring and skill extraction
+- **Voice Interview Bot** - Interactive voice-based candidate screening with sentiment analysis
+- **Attrition Prediction** - Machine learning models to identify at-risk employees
+- **Predictive Analytics** - Data-driven insights for HR decision making
+
+### Role-Based Dashboards
+
+#### Admin Dashboard
+- Company-wide HR operations overview
+- Department analytics and workforce metrics
+- Attrition risk analysis by department
+- Hiring trends and payroll distribution
+- AI-generated insights and recommendations
+
+#### Recruiter Dashboard
+- AI-powered resume screening with bulk upload
+- Candidate pipeline management
+- Voice interview bot integration
+- Skills analysis and candidate scoring
+- Recruitment analytics and metrics
+
+#### Manager Dashboard
+- Team performance monitoring
+- Attendance and productivity tracking
+- AI-powered team insights
+- Employee attrition risk alerts
+- Performance review management
+
+#### Employee Dashboard
+- Personal attendance and leave management
+- Payroll information and salary slips
+- Performance reviews and career growth insights
+- Self-service features for profile updates
+
+## Technology Stack
+
+- **Frontend**: React 18 + TypeScript
+- **Styling**: Tailwind CSS
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth with role-based access control
+- **Icons**: Lucide React
+- **Build Tool**: Vite
+
+## Getting Started
+
+### Prerequisites
+- Node.js 18+ installed
+- Supabase account with a project set up
+
+### Setup Instructions
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd hrms-platform
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Configure environment variables**
+
+   The `.env` file should already contain your Supabase credentials:
+   ```env
+   VITE_SUPABASE_URL=your-supabase-url
+   VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+   ```
+
+4. **Database setup**
+
+   The database schema has been automatically applied via migrations. The following tables are created:
+   - profiles (user profiles with roles)
+   - departments
+   - attendance
+   - payroll
+   - performance_reviews
+   - candidates
+   - ai_screening_results
+   - voice_interview_results
+   - attrition_predictions
+   - leave_requests
+
+5. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+6. **Build for production**
+   ```bash
+   npm run build
+   ```
+
+## User Roles
+
+The system supports four user roles with distinct permissions:
+
+1. **Admin** - Full system access, manages all HR operations
+2. **Senior Manager** - Department-level access, manages team performance
+3. **Recruiter** - Recruitment pipeline and candidate management
+4. **Employee** - Self-service access to personal information
+
+## Creating Your First User
+
+1. Navigate to the login page
+2. Click "Sign Up"
+3. Fill in your details and select a role
+4. Sign in with your credentials
+
+For testing, you can create users with different roles to explore all dashboards.
+
+## Key Features by Module
+
+### AI Resume Screening
+- Bulk resume upload (PDF/DOC support)
+- Automatic skill extraction using NLP
+- AI-powered job fit scoring (0-100)
+- Customizable score thresholds
+- Detailed candidate profiles with fit explanations
+- Export screening reports
+
+### Voice Interview Bot
+- Structured question flow covering multiple categories
+- Real-time voice recording and transcription
+- Sentiment and confidence analysis
+- Communication and technical ratings
+- AI-generated hiring recommendations
+- Complete interview scorecards
+
+### Analytics Dashboard
+- Department-wise attrition risk visualization
+- Monthly hiring vs attrition trends
+- Performance rating distribution
+- Payroll analytics by department
+- Productivity tracking over time
+- AI-generated insights and alerts
+
+### Security & Access Control
+- Row Level Security (RLS) on all tables
+- Role-based access policies
+- Secure authentication with Supabase Auth
+- Data isolation by department and role
+- Audit trails for sensitive operations
+
+## Database Schema
+
+The platform uses a comprehensive PostgreSQL schema with the following key tables:
+
+- **profiles** - Extended user information linked to auth.users
+- **departments** - Organizational structure
+- **candidates** - Job applicant information
+- **attendance** - Daily attendance records
+- **payroll** - Salary and payment information
+- **performance_reviews** - Employee evaluations
+- **attrition_predictions** - AI-generated risk assessments
+- **leave_requests** - Leave management
+- **ai_screening_results** - Resume screening data
+- **voice_interview_results** - Interview analysis data
+
+All tables have appropriate RLS policies ensuring data security and role-based access.
+
+## Development
+
+### Project Structure
+```
+src/
+├── components/
+│   ├── dashboards/      # Role-specific dashboard components
+│   ├── features/        # Feature modules (AI screening, etc.)
+│   ├── shared/          # Reusable UI components
+│   └── Login.tsx        # Authentication component
+├── contexts/
+│   └── AuthContext.tsx  # Authentication state management
+├── lib/
+│   └── supabase.ts      # Supabase client and types
+├── App.tsx              # Main application component
+└── main.tsx            # Application entry point
+```
+
+### Code Organization
+- Components are organized by feature and responsibility
+- Shared components promote reusability
+- TypeScript for type safety
+- Clean separation of concerns
+
+## Future Enhancements
+
+- Real-time notifications system
+- Advanced analytics with custom reports
+- Multi-language support
+- Mobile application
+- Integration with third-party HR tools
+- Advanced AI models for better predictions
+- Video interview capabilities
+- Document management system
+- Learning management integration
+
+## Support
+
+For issues, questions, or contributions, please open an issue in the repository.
+
+## License
+
+This project is proprietary software. All rights reserved.
