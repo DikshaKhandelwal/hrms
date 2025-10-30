@@ -1,15 +1,49 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 import { TrendingUp, AlertTriangle } from 'lucide-react';
 import { AIScreening } from '../features/AIScreening';
 import { CandidateManagement } from '../features/CandidateManagement';
 import { VoiceInterview } from '../features/VoiceInterview';
+import { supabase } from '../../lib/supabase';
 
 interface RecruiterDashboardProps {
   activeView?: string;
 }
 
 export const RecruiterDashboard = ({ activeView = 'dashboard' }: RecruiterDashboardProps) => {
+  const { profile } = useAuth();
   const [timeFilter, setTimeFilter] = useState('Today');
+  const [presentCount, setPresentCount] = useState<number | null>(null);
+  const [totalEmployees, setTotalEmployees] = useState<number | null>(null);
+
+  const loadAttendanceStats = useCallback(async () => {
+    try {
+      const today = new Date().toISOString().slice(0, 10);
+      const presentRes = await supabase
+        .from('attendance')
+        .select('id', { count: 'exact' })
+        .eq('date', today)
+        .eq('status', 'present');
+
+      const totalRes = await supabase
+        .from('profiles')
+        .select('id', { count: 'exact' });
+
+      setPresentCount(presentRes.count ?? 0);
+      setTotalEmployees(totalRes.count ?? 0);
+    } catch (err) {
+      console.error('Failed to load attendance stats for recruiter dashboard', err);
+      setPresentCount(null);
+      setTotalEmployees(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadAttendanceStats();
+    const handler = () => loadAttendanceStats();
+    window.addEventListener('attendance-updated', handler as EventListener);
+    return () => window.removeEventListener('attendance-updated', handler as EventListener);
+  }, [loadAttendanceStats]);
 
   return (
     <div className="min-h-screen bg-slate-100">
@@ -31,9 +65,9 @@ export const RecruiterDashboard = ({ activeView = 'dashboard' }: RecruiterDashbo
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h1 className="text-3xl font-bold text-slate-800">Good Morning HR !</h1>
-                <p className="text-slate-500 text-sm mt-1">Keep your face always toward the sunshine, and shadows will fall behind you !</p>
-              </div>
+                  <h1 className="text-3xl font-bold text-slate-800">{profile?.role === 'senior_manager' ? 'Good Morning Senior Manager !' : 'Good Morning HR !'}</h1>
+                  <p className="text-slate-500 text-sm mt-1">Keep your face always toward the sunshine, and shadows will fall behind you !</p>
+                </div>
               <div className="flex gap-2">
                 {['Today', 'Weekly', 'Monthly', 'Custom'].map((filter) => (
                   <button
@@ -61,7 +95,7 @@ export const RecruiterDashboard = ({ activeView = 'dashboard' }: RecruiterDashbo
                 <div className="flex justify-between items-end mb-2">
                   <span className="text-slate-500 text-sm">Today Attendance</span>
                 </div>
-                <div className="text-4xl font-bold text-slate-800">54/60</div>
+                <div className="text-4xl font-bold text-slate-800">{presentCount !== null && totalEmployees !== null ? `${presentCount}/${totalEmployees}` : '—'}</div>
                 <div className="text-xs text-slate-400 mt-1">Employees in Building</div>
               </div>
               <div>

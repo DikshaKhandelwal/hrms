@@ -7,6 +7,9 @@ import { AdminDashboard } from './components/dashboards/AdminDashboard';
 import { RecruiterDashboard } from './components/dashboards/RecruiterDashboard';
 import { ManagerDashboard } from './components/dashboards/ManagerDashboard';
 import { EmployeeDashboard } from './components/dashboards/EmployeeDashboard';
+import ProfilePage from './components/employee/ProfilePage';
+import AttendancePage from './components/employee/AttendancePage';
+import LeaveRequestsPage from './components/employee/LeaveRequestsPage';
 
 const MainApp: React.FC = () => {
   const { user, profile, loading } = useAuth();
@@ -63,13 +66,23 @@ const MainApp: React.FC = () => {
   const renderDashboard = () => {
     switch (profile.role) {
       case 'admin':
-        return <AdminDashboard />;
+        return <AdminDashboard activeView={currentView} onViewChange={setCurrentView} />;
       case 'recruiter':
         return <RecruiterDashboard activeView={currentView} />;
       case 'senior_manager':
-        return <ManagerDashboard />;
+        return <ManagerDashboard activeView={currentView} />;
       default:
-        return <EmployeeDashboard />;
+        // Employee - render sub-pages based on sidebar currentView
+        switch (currentView) {
+          case 'profile':
+            return <ProfilePage />;
+          case 'attendance':
+            return <AttendancePage />;
+          case 'leaves':
+            return <LeaveRequestsPage />;
+          default:
+            return <EmployeeDashboard onViewChange={setCurrentView} />;
+        }
     }
   };
 

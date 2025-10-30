@@ -1,4 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { RecruiterDashboard } from './RecruiterDashboard';
+import { ManagerDashboard } from './ManagerDashboard';
+import { EmployeeDashboard } from './EmployeeDashboard';
+import ProfilePage from '../employee/ProfilePage';
+import AttendancePage from '../employee/AttendancePage';
+import LeaveRequestsPage from '../employee/LeaveRequestsPage';
 import { Users, Building2, TrendingDown, Star, DollarSign, UserCheck } from 'lucide-react';
 import { StatCard } from '../shared/StatCard';
 import { supabase } from '../../lib/supabase';
@@ -12,7 +18,7 @@ interface DashboardStats {
   activeRecruitments: number;
 }
 
-export const AdminDashboard: React.FC = () => {
+export const AdminDashboard: React.FC<{ activeView?: string; onViewChange?: (v: string) => void }> = ({ activeView = 'dashboard', onViewChange }) => {
   const [stats, setStats] = useState<DashboardStats>({
     totalEmployees: 0,
     departmentCount: 0,
@@ -56,6 +62,51 @@ export const AdminDashboard: React.FC = () => {
       setLoading(false);
     }
   };
+
+  // If the admin selected a non-dashboard view from the sidebar, render the
+  // corresponding role-specific dashboard or page so admins can inspect any
+  // role's tabs and content.
+  if (activeView && activeView !== 'dashboard') {
+    // manager views
+    const managerViews = new Set([
+      'team',
+      'approvals',
+      'recruitment-pipeline',
+      'team-performance',
+      'role-management',
+      'goal-kpi',
+      'audit-logs',
+    ]);
+
+    // recruiter views
+    const recruiterViews = new Set(['candidates', 'ai-screening', 'voice-interview', 'analytics', 'recruitment']);
+
+    // employee views
+    const employeeViews = new Set(['profile', 'attendance', 'leaves']);
+
+    if (managerViews.has(activeView)) {
+      return <ManagerDashboard activeView={activeView} />;
+    }
+
+    if (recruiterViews.has(activeView)) {
+      return <RecruiterDashboard activeView={activeView} />;
+    }
+
+    if (employeeViews.has(activeView)) {
+      switch (activeView) {
+        case 'profile':
+          return <ProfilePage />;
+        case 'attendance':
+          return <AttendancePage />;
+        case 'leaves':
+          return <LeaveRequestsPage />;
+        default:
+          return <EmployeeDashboard onViewChange={onViewChange} />;
+      }
+    }
+    // For other admin sub-views (employees, departments, payroll, etc.),
+    // fall back to showing the admin overview below.
+  }
 
   if (loading) {
     return (
@@ -131,9 +182,8 @@ export const AdminDashboard: React.FC = () => {
                 </div>
                 <div className="w-full bg-slate-100 rounded-full h-2">
                   <div
-                    className={`h-2 rounded-full ${
-                      dept.risk > 25 ? 'bg-red-500' : dept.risk > 15 ? 'bg-amber-500' : 'bg-green-500'
-                    }`}
+                    className={`h-2 rounded-full ${dept.risk > 25 ? 'bg-red-500' : dept.risk > 15 ? 'bg-amber-500' : 'bg-green-500'
+                      }`}
                     style={{ width: `${dept.risk}%` }}
                   ></div>
                 </div>

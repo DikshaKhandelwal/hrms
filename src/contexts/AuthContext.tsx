@@ -9,6 +9,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, fullName: string, role: string) => Promise<void>;
   signOut: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -36,7 +37,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       (async () => {
         setUser(session?.user ?? null);
         if (session?.user) {
@@ -54,7 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchProfile = async (userId: string) => {
     try {
       console.log('Fetching profile for user:', userId);
-      
+
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -67,7 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.error('Profile fetch error:', error);
         throw error;
       }
-      
+
       if (!data) {
         console.warn('No profile found for user:', userId);
         // Profile doesn't exist yet - this is OK for new signups
@@ -85,12 +86,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Public refresh that re-fetches the current user's profile
+  const refreshProfile = async () => {
+    if (!user?.id) return;
+    setLoading(true);
+    await fetchProfile(user.id);
+  };
+
   const signIn = async (email: string, password: string) => {
     console.log('Attempting sign in for:', email);
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     console.log('Sign in result:', { data, error });
     if (error) throw error;
-    
+
     // Trigger auth state change will handle profile fetching
     console.log('Sign in successful, auth state change will trigger profile fetch');
   };
@@ -107,7 +115,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         },
       },
     });
-    
+
     if (error) throw error;
 
     // Profile is created automatically by database trigger
@@ -124,7 +132,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signOut, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );

@@ -23,49 +23,51 @@ export const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => 
               <span className="font-semibold text-lg">EHR PORTAL</span>
             </div>
             <div className="flex gap-6 text-sm">
-              <button 
+              <button
                 onClick={() => onViewChange?.('dashboard')}
                 className={currentView === 'dashboard' ? 'text-white' : 'text-slate-400 hover:text-white'}
               >
                 Dashboard
               </button>
-              <button 
+              <button
                 onClick={() => onViewChange?.('candidates')}
                 className={currentView === 'candidates' ? 'text-white' : 'text-slate-400 hover:text-white'}
               >
                 Candidates
               </button>
-              <button 
+              <button
                 onClick={() => onViewChange?.('ai-screening')}
                 className={currentView === 'ai-screening' ? 'text-white' : 'text-slate-400 hover:text-white'}
               >
                 AI Screening
               </button>
-              <button 
+              <button
                 onClick={() => onViewChange?.('voice-interview')}
                 className={currentView === 'voice-interview' ? 'text-white' : 'text-slate-400 hover:text-white'}
               >
                 Voice Interview
               </button>
-              <button 
+              <button
                 onClick={() => onViewChange?.('attendance')}
                 className={currentView === 'attendance' ? 'text-white' : 'text-slate-400 hover:text-white'}
               >
                 Attendance
               </button>
-              <button 
+              <button
                 onClick={() => onViewChange?.('payroll')}
                 className={currentView === 'payroll' ? 'text-white' : 'text-slate-400 hover:text-white'}
               >
                 Payroll
               </button>
-              <button 
+              {/* recruiter-specific items are already present above; keep nav unique */}
+
+              <button
                 onClick={() => onViewChange?.('reports')}
                 className={currentView === 'reports' ? 'text-white' : 'text-slate-400 hover:text-white'}
               >
                 Reports
               </button>
-              <button 
+              <button
                 onClick={() => onViewChange?.('settings')}
                 className={currentView === 'settings' ? 'text-white' : 'text-slate-400 hover:text-white'}
               >

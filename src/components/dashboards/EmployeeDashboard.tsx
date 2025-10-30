@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Calendar, DollarSign, TrendingUp, FileText, Clock, Award } from 'lucide-react';
 import { StatCard } from '../shared/StatCard';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 
-export const EmployeeDashboard: React.FC = () => {
+export const EmployeeDashboard: React.FC<{ onViewChange?: (view: string) => void }> = ({ onViewChange }) => {
   const { profile } = useAuth();
   const [stats, setStats] = useState({
     attendanceRate: 0,
@@ -14,11 +14,7 @@ export const EmployeeDashboard: React.FC = () => {
   });
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadEmployeeData();
-  }, [profile?.id]);
-
-  const loadEmployeeData = async () => {
+  const loadEmployeeData = useCallback(async () => {
     if (!profile?.id) return;
 
     try {
@@ -49,28 +45,43 @@ export const EmployeeDashboard: React.FC = () => {
           .eq('employee_id', profile.id)
           .order('review_date', { ascending: false })
           .limit(1)
-          .maybeSingle()
+          .maybeSingle(),
       ]);
 
-      const presentDays = attendanceRes.data?.filter(a => a.status === 'present').length || 0;
+      const presentDays = attendanceRes.data?.filter((a: any) => a.status === 'present').length || 0;
       const totalDays = attendanceRes.data?.length || 1;
       const attendanceRate = (presentDays / totalDays) * 100;
 
-      const usedLeave = leaveRes.data?.reduce((sum, l) => sum + l.total_days, 0) || 0;
+      const usedLeave = leaveRes.data?.reduce((sum: number, l: any) => sum + l.total_days, 0) || 0;
       const totalLeave = 20;
 
       setStats({
         attendanceRate: Math.round(attendanceRate),
-        nextPayrollDate: payrollRes?.payment_date || 'Not scheduled',
+        nextPayrollDate: payrollRes.data?.payment_date || 'Not scheduled',
         leaveBalance: totalLeave - usedLeave,
-        lastPerformanceRating: reviewRes?.rating || 0,
+        lastPerformanceRating: reviewRes.data?.rating || 0,
       });
     } catch (error) {
       console.error('Error loading employee data:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [profile?.id]);
+
+  useEffect(() => {
+    loadEmployeeData();
+  }, [loadEmployeeData]);
+
+  // listen for updates triggered by other pages (attendance/leave requests)
+  useEffect(() => {
+    const handler = () => loadEmployeeData();
+    window.addEventListener('attendance-updated', handler as EventListener);
+    window.addEventListener('leave-request-updated', handler as EventListener);
+    return () => {
+      window.removeEventListener('attendance-updated', handler as EventListener);
+      window.removeEventListener('leave-request-updated', handler as EventListener);
+    };
+  }, [loadEmployeeData]);
 
   if (loading) {
     return (
@@ -119,13 +130,22 @@ export const EmployeeDashboard: React.FC = () => {
         <div className="lg:col-span-2 bg-white rounded-xl p-6 border border-slate-200">
           <h3 className="text-lg font-semibold text-slate-900 mb-4">Quick Actions</h3>
           <div className="grid grid-cols-2 gap-4">
-            <button className="p-6 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition text-left">
+            <button onClick={() => {
+              // If an external attendance portal is configured, open it in a new tab;
+              // otherwise navigate to the app's attendance view.
+              const portal = import.meta.env.VITE_ATTENDANCE_PORTAL_URL;
+              if (portal) {
+                window.open(portal, '_blank');
+              } else {
+                onViewChange?.('attendance');
+              }
+            }} className="p-6 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition text-left">
               <Calendar className="w-8 h-8 text-slate-900 mb-3" />
               <p className="font-semibold text-slate-900 mb-1">Mark Attendance</p>
               <p className="text-xs text-slate-600">Check in for today</p>
             </button>
 
-            <button className="p-6 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition text-left">
+            <button onClick={() => onViewChange?.('leaves')} className="p-6 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition text-left">
               <FileText className="w-8 h-8 text-slate-900 mb-3" />
               <p className="font-semibold text-slate-900 mb-1">Request Leave</p>
               <p className="text-xs text-slate-600">Submit leave application</p>
