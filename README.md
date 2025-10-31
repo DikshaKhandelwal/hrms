@@ -1,3 +1,16 @@
+# Team member 1
+- Deeksha Khandelwal 
+- diksha1010.dk@gmail.com
+- Amity Univeristy, Noida
+# Team member 2
+- Shivika Mittal
+- shivika2934@gmail.com
+- Amity Univeristy, Noida
+# Team member 3
+- Vaishnavi Sharma
+- sharma.v2044@gmail.com
+- Amity Univeristy, Noida
+
 # Enterprise HRMS Platform
 
 A modern, intelligent, and scalable Human Resource Management System with AI-powered features for recruitment, performance tracking, payroll management, and predictive analytics.
