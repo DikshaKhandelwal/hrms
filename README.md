@@ -54,6 +54,70 @@ A modern, intelligent, and scalable Human Resource Management System with AI-pow
 - **Icons**: Lucide React
 - **Build Tool**: Vite
 
+## AI Features 
+
+## AI-Powered HR Management System
+
+An integrated AI module for smarter recruitment, automated screening, and intelligent HR operations. It combines resume intelligence, contextual evaluation, and conversational automation to enhance efficiency and transparency.
+
+### 1. AI Resume Scanner (FastAPI + OpenAI GPT)
+
+* Extracts skills, experience, and education from PDF/DOCX resumes using NLP.
+* Matches candidate profiles to job descriptions with AI-based scoring and feedback.
+* Generates match scores, skill gap analysis, and improvement suggestions.
+
+**Tech Stack:** FastAPI · Python · OpenAI API · pdfplumber · python-docx
+**Endpoint Example:** `POST /api/match-resume` — returns AI-based resume evaluation.
+
+---
+
+### 2. Intelligent Resume Screening (Streamlit + LSTM + Gemini Pro)
+
+* Multi-model evaluation combining rule-based, LSTM, and transformer-based analysis.
+* Provides real-time dashboards for skill trends, candidate ranking, and model performance.
+* Secure data storage and analytics via Supabase (PostgreSQL).
+
+**Tech Stack:** Streamlit · TensorFlow · PyTorch · Hugging Face · Supabase · Plotly
+
+![alt text](assets/AI_Resume_Screening.png)
+
+---
+
+### 3. AI Chatbot Assistant (LangGraph + LLM)
+
+* Conversational HR assistant for natural language queries.
+* Supports employee lookup, scheduling, and record management.
+* Uses LangGraph for structured workflows and human-in-the-loop validation.
+
+**Models Used:** OpenAI GPT · Anthropic Claude
+
+![alt text](assets/AI_Chatbot.png)
+
+---
+
+### AI Integration Overview
+
+![alt text](assets/AI_Integration_Overview.png)
+
+---
+
+### Key AI Models
+
+* **GPT-4o-mini** – Resume understanding and scoring
+* **Gemini Pro** – Candidate suitability and insights
+* **Custom LSTM** – Deep contextual scoring
+* **DistilBERT** – Semantic similarity detection
+* **LangGraph** – Structured AI workflow orchestration
+
+---
+
+### Visualization & Analytics
+
+* Skill distribution and job trend analysis
+* Salary vs. experience insights
+* Model performance comparison
+* WordClouds for trending domains
+
 ## Getting Started
 
 ### Prerequisites
