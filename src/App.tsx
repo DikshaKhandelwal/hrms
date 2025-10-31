@@ -7,6 +7,7 @@ import { AdminDashboard } from './components/dashboards/AdminDashboard';
 import { RecruiterDashboard } from './components/dashboards/RecruiterDashboard';
 import { ManagerDashboard } from './components/dashboards/ManagerDashboard';
 import { EmployeeDashboard } from './components/dashboards/EmployeeDashboard';
+import ChatbotWidget from "./components/chatbot/ChatbotWidget";
 import ProfilePage from './components/employee/ProfilePage';
 import AttendancePage from './components/employee/AttendancePage';
 import LeaveRequestsPage from './components/employee/LeaveRequestsPage';
@@ -93,6 +94,7 @@ const MainApp: React.FC = () => {
         <Header currentView={currentView} onViewChange={setCurrentView} />
         <main className="flex-1 overflow-y-auto">
           {renderDashboard()}
+          <ChatbotWidget />
         </main>
       </div>
     </div>
