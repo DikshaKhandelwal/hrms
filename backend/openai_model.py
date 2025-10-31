@@ -21,22 +21,21 @@ def initialize_openai(api_key: str = None):
         if not api_key:
             raise ValueError("OpenAI API key not provided")
         
-        # Create a custom httpx client without proxies to avoid compatibility issues
-        http_client = httpx.Client(
-            timeout=60.0,
-            follow_redirects=True
-        )
-        
+        # Initialize OpenAI client without custom http_client to avoid compatibility issues
         client = OpenAI(
             api_key=api_key,
-            http_client=http_client
+            timeout=60.0
         )
     except Exception as e:
-        if "proxies" in str(e):
-            # Fallback: try without custom http_client
-            client = OpenAI(api_key=api_key)
-        else:
-            raise
+        print(f"Error initializing OpenAI: {e}")
+        raise
+
+def get_openai_client():
+    """Get the initialized OpenAI client"""
+    global client
+    if client is None:
+        initialize_openai()
+    return client
 
 def analyze_resume_with_openai(resume_text: str, job_details: dict) -> dict:
     """

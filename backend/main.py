@@ -19,6 +19,21 @@ sys.path.insert(0, backend_path)
 from services.resume_parser import parse_resume
 from openai_model import initialize_openai, analyze_resume_with_openai
 import io
+from openai import OpenAI
+
+# Import attrition predictor
+try:
+    from ml_models.simple_predictor import SimpleAttritionPredictor
+    # Get absolute path to backend directory
+    backend_dir = os.path.dirname(os.path.abspath(__file__))
+    model_dir = os.path.join(backend_dir, 'ml_models', 'saved_models')
+    predictor = SimpleAttritionPredictor(model_dir=model_dir)
+    print(f"✓ Attrition predictor loaded successfully from {model_dir}")
+except Exception as e:
+    print(f"Warning: Attrition predictor not available - {e}")
+    import traceback
+    traceback.print_exc()
+    predictor = None
 
 # Initialize OpenAI
 try:
@@ -63,6 +78,30 @@ class ResumeMatchResponse(BaseModel):
     suggestions: str
     resume_data: dict
     gemini_suitability_summary: Optional[str] = None
+
+# Attrition Prediction Models
+class ManualEmployeeDataRequest(BaseModel):
+    age: int
+    monthly_income: float
+    total_working_years: int
+    years_at_company: int
+    job_satisfaction: int  # 1-4
+    work_life_balance: int  # 1-4
+    environment_satisfaction: int  # 1-4
+    job_involvement: int  # 1-4
+    performance_rating: int  # 1-4
+    overtime: str  # "Yes" or "No"
+    distance_from_home: int
+    num_companies_worked: int
+    years_since_last_promotion: int
+    department: str
+    job_role: str
+
+class AttritionPredictionResponse(BaseModel):
+    risk_score: float
+    risk_level: str
+    contributing_factors: List[str]
+    recommendations: str
 
 @app.get("/")
 async def root():
@@ -195,6 +234,87 @@ async def health_check():
     Health check endpoint
     """
     return {"status": "healthy", "message": "API is running"}
+
+@app.post("/api/predict-attrition", response_model=AttritionPredictionResponse)
+async def predict_attrition(data: ManualEmployeeDataRequest):
+    """
+    Predict employee attrition risk from manual input data
+    """
+    try:
+        print(f"📊 Received prediction request for employee data")
+        print(f"   Age: {data.age}, Income: {data.monthly_income}, Department: {data.department}")
+        
+        if predictor is None:
+            print("❌ Predictor is None - model not loaded!")
+            raise HTTPException(status_code=503, detail="Attrition predictor not available. Model files may be missing.")
+        
+        employee_dict = data.dict()
+        print(f"   Converting to dict: {list(employee_dict.keys())}")
+        
+        result = predictor.predict_attrition(employee_dict)
+        print(f"✓ Prediction complete: Risk={result.get('risk_score')}%, Level={result.get('risk_level')}")
+        
+        return AttritionPredictionResponse(**result)
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ ERROR in predict_attrition: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error predicting attrition: {str(e)}")
+
+class ExplainPredictionRequest(BaseModel):
+    risk_score: float
+    risk_level: str
+    contributing_factors: List[str]
+    recommendations: str
+
+@app.post("/api/explain-prediction")
+async def explain_prediction(data: ExplainPredictionRequest):
+    """
+    Get AI explanation for attrition prediction using OpenAI
+    """
+    try:
+        # Get OpenAI API key
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise HTTPException(status_code=503, detail="OpenAI API key not configured")
+        
+        # Create OpenAI client directly
+        client = OpenAI(api_key=api_key)
+        
+        prompt = f"""You are an HR analytics expert. Provide a clear, actionable explanation for this employee attrition prediction:
+
+Risk Score: {data.risk_score}%
+Risk Level: {data.risk_level}
+Contributing Factors: {', '.join(data.contributing_factors)}
+Recommendations: {data.recommendations}
+
+Provide:
+1. A brief summary (2-3 sentences) explaining what this risk score means
+2. Why these specific factors matter
+3. Concrete action items the HR team can take
+
+Keep it professional and actionable."""
+
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are an HR analytics expert providing clear, actionable insights."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=300,
+            temperature=0.7
+        )
+        
+        explanation = response.choices[0].message.content.strip()
+        return {"explanation": explanation}
+        
+    except Exception as e:
+        print(f"❌ ERROR in explain_prediction: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error generating explanation: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn
