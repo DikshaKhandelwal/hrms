@@ -67,7 +67,7 @@ An integrated AI module for smarter recruitment, automated screening, and intell
 * Generates match scores, skill gap analysis, and improvement suggestions.
 
 **Tech Stack:** FastAPI · Python · OpenAI API · pdfplumber · python-docx
-**Endpoint Example:** `POST /api/match-resume` — returns AI-based resume evaluation.
+**Endpoint Example:** `POST /api/match-resume` - returns AI-based resume evaluation.
 
 ---
 
@@ -94,6 +94,22 @@ An integrated AI module for smarter recruitment, automated screening, and intell
 ![alt text](assets/AI_Chatbot.png)
 
 ---
+
+### 4. **Attrition & Performance Prediction Model (ML + FastAPI)**
+
+* Predicts **employee attrition risk** and **performance levels** using historical HR data.
+* Uses **Gradient Boosting and Random Forest classifiers** trained on features like experience, role, salary, performance score, and tenure.
+* Provides **department-wise attrition probability** and individual employee risk scores.
+* Integrated into the **Admin and Manager Dashboards** for early intervention and workforce planning.
+* Continuously improves through **data-driven retraining** and feedback loops for better accuracy.
+
+**Tech Stack:** Python · FastAPI · scikit-learn · Pandas · Supabase (PostgreSQL) · Plotly
+
+**Endpoint Example:**
+`POST /api/predict-attrition` - returns predicted attrition risk and performance score for each employee.
+
+![alt text](assets/Attrition_Model.png)
+
 
 ### AI Integration Overview
 
