@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Upload, FileText, Briefcase, TrendingUp, AlertCircle, CheckCircle, XCircle, Sparkles } from 'lucide-react';
+import { Upload, FileText, Briefcase, TrendingUp, AlertCircle, CheckCircle, XCircle, Sparkles, UserPlus } from 'lucide-react';
 import { getActiveJobs, matchResumeToJob, savePredictionHistory, createJob, parseResumeFile } from '../../lib/aiMatcher';
 import { Job, MatchResult, ResumeData } from '../../lib/types';
+import { supabase } from '../../lib/supabase';
 
 interface ScreeningResult {
   resumeName: string;
@@ -19,6 +20,8 @@ export const AIScreening: React.FC = () => {
   const [result, setResult] = useState<ScreeningResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showJobForm, setShowJobForm] = useState(false);
+  const [savingCandidate, setSavingCandidate] = useState(false);
+  const [savedSuccess, setSavedSuccess] = useState(false);
   const [newJob, setNewJob] = useState({
     job_title: '',
     company_name: '',
@@ -110,16 +113,57 @@ export const AIScreening: React.FC = () => {
     }
   };
 
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-600 bg-green-50';
-    if (score >= 60) return 'text-amber-600 bg-amber-50';
-    return 'text-red-600 bg-red-50';
+  const handleSaveCandidate = async () => {
+    if (!result) return;
+
+    setSavingCandidate(true);
+    setSavedSuccess(false);
+    setError(null);
+
+    try {
+      // Try to extract email from raw text (basic regex)
+      const emailMatch = result.resumeData.raw_text.match(/[\w.-]+@[\w.-]+\.\w+/);
+      const phoneMatch = result.resumeData.raw_text.match(/[\d\s\-()]{10,15}/);
+      
+      const { error: insertError } = await supabase
+        .from('candidates')
+        .insert({
+          full_name: result.resumeName.replace(/\.(pdf|docx|doc)$/i, ''),
+          email: emailMatch ? emailMatch[0] : 'noemail@example.com',
+          phone: phoneMatch ? phoneMatch[0].trim() : '',
+          position_applied: result.job.job_title,
+          status: 'screening',
+          resume_url: '',
+          skills_extracted: result.resumeData.skills, // Array - matches text[] in DB
+          experience_years: result.resumeData.years_experience,
+          ai_screening_score: result.matchResult.match_score,
+          notes: `Match: ${result.matchResult.match_score}%. Skills: ${result.matchResult.matched_skills.join(', ')}. ${result.matchResult.suggestions}`
+        })
+        .select()
+        .single();
+
+      if (insertError) throw insertError;
+
+      setSavedSuccess(true);
+      setTimeout(() => setSavedSuccess(false), 3000);
+    } catch (err) {
+      console.error('Error saving candidate:', err);
+      setError(err instanceof Error ? err.message : 'Failed to save candidate');
+    } finally {
+      setSavingCandidate(false);
+    }
   };
 
   const getScoreBadge = (score: number) => {
     if (score >= 80) return { label: 'Excellent Match', color: 'bg-green-500' };
     if (score >= 60) return { label: 'Good Match', color: 'bg-amber-500' };
     return { label: 'Needs Improvement', color: 'bg-red-500' };
+  };
+
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return 'bg-green-50 text-green-900 border border-green-200';
+    if (score >= 60) return 'bg-amber-50 text-amber-900 border border-amber-200';
+    return 'bg-red-50 text-red-900 border border-red-200';
   };
 
   return (
@@ -245,9 +289,39 @@ export const AIScreening: React.FC = () => {
         <div className="bg-white rounded-xl p-6 border border-slate-200 space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-slate-900">Screening Results</h2>
-            <span className={`px-4 py-2 rounded-full text-sm font-semibold ${getScoreBadge(result.matchResult.match_score).color} text-white`}>
-              {getScoreBadge(result.matchResult.match_score).label}
-            </span>
+            <div className="flex items-center gap-3">
+              <span className={`px-4 py-2 rounded-full text-sm font-semibold ${getScoreBadge(result.matchResult.match_score).color} text-white`}>
+                {getScoreBadge(result.matchResult.match_score).label}
+              </span>
+              {result.matchResult.match_score >= 70 && (
+                <button
+                  onClick={handleSaveCandidate}
+                  disabled={savingCandidate || savedSuccess}
+                  className={`px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition ${
+                    savedSuccess
+                      ? 'bg-green-600 text-white'
+                      : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                  } disabled:opacity-50`}
+                >
+                  {savedSuccess ? (
+                    <>
+                      <CheckCircle className="w-4 h-4" />
+                      <span>Saved!</span>
+                    </>
+                  ) : savingCandidate ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus className="w-4 h-4" />
+                      <span>Save Good Candidate</span>
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-3 gap-4">

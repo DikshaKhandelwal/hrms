@@ -4,6 +4,10 @@ import { TrendingUp, AlertTriangle } from 'lucide-react';
 import { AIScreening } from '../features/AIScreening';
 import { CandidateManagement } from '../features/CandidateManagement';
 import { VoiceInterview } from '../features/VoiceInterview';
+import ManualAttritionPredictor from '../features/ManualAttritionPredictor';
+import PayrollPage from '../payroll/PayrollPage';
+import RecruiterLeaveView from '../recruiter/RecruiterLeaveView';
+import RecruiterAttendanceView from '../recruiter/RecruiterAttendanceView';
 import { supabase } from '../../lib/supabase';
 
 interface RecruiterDashboardProps {
@@ -76,7 +80,7 @@ export const RecruiterDashboard = ({ activeView = 'dashboard' }: RecruiterDashbo
       try {
         // unsubscribe the realtime channel
         // channel.unsubscribe() returns a Promise; we can call it but don't await in cleanup
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+         
         channel.unsubscribe();
       } catch (err) {
         console.warn('Failed to unsubscribe realtime channel', err);
@@ -97,6 +101,10 @@ export const RecruiterDashboard = ({ activeView = 'dashboard' }: RecruiterDashbo
         {activeView === 'candidates' && <CandidateManagement />}
         {activeView === 'ai-screening' && <AIScreening />}
         {activeView === 'voice-interview' && <VoiceInterview />}
+        {activeView === 'predictions' && <ManualAttritionPredictor />}
+        {activeView === 'payroll' && <PayrollPage />}
+        {activeView === 'attendance' && <RecruiterAttendanceView />}
+        {activeView === 'leaves' && <RecruiterLeaveView />}
 
         {/* Dashboard Overview */}
         {activeView === 'dashboard' && (

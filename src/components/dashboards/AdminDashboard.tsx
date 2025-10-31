@@ -93,7 +93,7 @@ export const AdminDashboard: React.FC<{ activeView?: string; onViewChange?: (v: 
     ]);
 
     // recruiter views
-    const recruiterViews = new Set(['candidates', 'ai-screening', 'voice-interview', 'analytics', 'recruitment']);
+    const recruiterViews = new Set(['candidates', 'ai-screening', 'voice-interview', 'analytics', 'recruitment', 'predictions', 'payroll', 'attendance', 'leaves']);
 
     // employee views
     const employeeViews = new Set(['profile', 'attendance', 'leaves']);

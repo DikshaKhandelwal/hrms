@@ -8,7 +8,6 @@ import { AdminDashboard } from './components/dashboards/AdminDashboard';
 import { RecruiterDashboard } from './components/dashboards/RecruiterDashboard';
 import { ManagerDashboard } from './components/dashboards/ManagerDashboard';
 import { EmployeeDashboard } from './components/dashboards/EmployeeDashboard';
-import ChatbotWidget from "./components/chatbot/ChatbotWidget";
 import ProfilePage from './components/employee/ProfilePage';
 import AttendancePage from './components/employee/AttendancePage';
 import LeaveRequestsPage from './components/employee/LeaveRequestsPage';

@@ -29,6 +29,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) =
       { id: 'candidates', label: 'Candidates', icon: Users },
       { id: 'ai-screening', label: 'AI Screening', icon: BrainCircuit },
       { id: 'voice-interview', label: 'Voice Interview', icon: FileText },
+      { id: 'predictions', label: 'Attrition Prediction', icon: TrendingUp },
+      { id: 'payroll', label: 'Payroll', icon: DollarSign },
+      { id: 'attendance', label: 'Attendance', icon: Calendar },
+      { id: 'leaves', label: 'Leave Requests', icon: FileText },
       { id: 'analytics', label: 'Analytics', icon: TrendingUp },
     ];
 
@@ -163,6 +167,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) =
             <div>
               <h4 className="text-xs text-slate-400 uppercase px-3 mb-2">Analytics</h4>
               <div className="space-y-1">
+                <button onClick={() => onViewChange('predictions')} className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition ${currentView === 'predictions' ? 'bg-slate-700 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white'}`}>
+                  <TrendingUp className="w-5 h-5" />
+                  <span className="font-medium">Attrition Prediction</span>
+                </button>
                 <button onClick={() => onViewChange('ai-insights')} className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition ${currentView === 'ai-insights' ? 'bg-slate-700 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white'}`}>
                   <BrainCircuit className="w-5 h-5" />
                   <span className="font-medium">AI Insights</span>
