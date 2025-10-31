@@ -10,7 +10,7 @@ export default function ChatbotWidget() {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   // Connection info
-  const userId = "vaishnavi";
+  const userId = "test";
   const chatId = "chat1";
   const token = "test_token";
   const WS_URL = `ws://localhost:8000/${userId}/${chatId}/${token}`;
