@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Login } from './components/Login';
 import { Sidebar } from './components/shared/Sidebar';
 import { Header } from './components/shared/Header';
+import ChatbotWidget from "./components/chatbot/ChatbotWidget";
 import { AdminDashboard } from './components/dashboards/AdminDashboard';
 import { RecruiterDashboard } from './components/dashboards/RecruiterDashboard';
 import { ManagerDashboard } from './components/dashboards/ManagerDashboard';
