@@ -3,6 +3,7 @@ import { Calendar, DollarSign, TrendingUp, FileText, Clock, Award } from 'lucide
 import { StatCard } from '../shared/StatCard';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import { useRealtime } from '../../hooks/useRealtime';
 
 export const EmployeeDashboard: React.FC<{ onViewChange?: (view: string) => void }> = ({ onViewChange }) => {
   const { profile } = useAuth();
@@ -82,6 +83,13 @@ export const EmployeeDashboard: React.FC<{ onViewChange?: (view: string) => void
       window.removeEventListener('leave-request-updated', handler as EventListener);
     };
   }, [loadEmployeeData]);
+
+  // Also subscribe to database-level realtime events so changes from other
+  // browser sessions trigger a reload (keeps the dashboard in sync).
+  useRealtime(
+    () => loadEmployeeData(),
+    () => loadEmployeeData()
+  );
 
   if (loading) {
     return (

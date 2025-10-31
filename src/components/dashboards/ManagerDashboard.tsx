@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRealtime } from '../../hooks/useRealtime';
 import { RecruiterDashboard } from './RecruiterDashboard';
 import TeamPanel from '../manager/TeamPanel';
 import ApprovalsPanel from '../manager/ApprovalsPanel';
@@ -13,6 +14,25 @@ import AuditLogsPanel from '../manager/AuditLogsPanel';
 
 // ManagerDashboard: render manager-specific pages when requested, otherwise reuse RecruiterDashboard
 export const ManagerDashboard: React.FC<{ activeView?: string }> = ({ activeView = 'dashboard' }) => {
+  // Ensure manager-level dashboards react to realtime changes and propagate
+  // in-page events so nested components refresh as needed.
+  useRealtime(
+    () => {
+      // notify nested components that attendance changed
+      try {
+        window.dispatchEvent(new Event('attendance-updated'));
+      } catch (err) {
+        /* ignore */
+      }
+    },
+    () => {
+      try {
+        window.dispatchEvent(new Event('leave-request-updated'));
+      } catch (err) {
+        /* ignore */
+      }
+    }
+  );
   switch (activeView) {
     case 'team':
       return <TeamPanel />;

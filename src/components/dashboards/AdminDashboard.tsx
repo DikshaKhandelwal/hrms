@@ -8,6 +8,7 @@ import LeaveRequestsPage from '../employee/LeaveRequestsPage';
 import { Users, Building2, TrendingDown, Star, DollarSign, UserCheck } from 'lucide-react';
 import { StatCard } from '../shared/StatCard';
 import { supabase } from '../../lib/supabase';
+import { useRealtime } from '../../hooks/useRealtime';
 
 interface DashboardStats {
   totalEmployees: number;
@@ -62,6 +63,19 @@ export const AdminDashboard: React.FC<{ activeView?: string; onViewChange?: (v: 
       setLoading(false);
     }
   };
+
+  // Subscribe to realtime events and refresh admin overview when attendance or
+  // leave requests change. This keeps the admin summary in sync across sessions.
+  useRealtime(
+    () => {
+      // attendance changed
+      loadDashboardData();
+    },
+    () => {
+      // leave requests changed
+      loadDashboardData();
+    }
+  );
 
   // If the admin selected a non-dashboard view from the sidebar, render the
   // corresponding role-specific dashboard or page so admins can inspect any
