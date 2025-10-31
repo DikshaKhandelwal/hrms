@@ -1,5 +1,5 @@
 # Team member 1
-- Deeksha Khandelwal 
+- Diksha Khandelwal 
 - diksha1010.dk@gmail.com
 - Amity Univeristy, Noida
 # Team member 2
