@@ -90,7 +90,7 @@ An integrated AI module for smarter recruitment, automated screening, and intell
 * Provides real-time dashboards for skill trends, candidate ranking, and model performance.
 * Secure data storage and analytics via Supabase (PostgreSQL).
 
-**Tech Stack:** Streamlit · TensorFlow · PyTorch · Hugging Face · Supabase · Plotly
+**Tech Stack:**· TensorFlow · PyTorch · Hugging Face · Supabase · Plotly
 
 ![alt text](assets/AI_Resume_Screening.png)
 
@@ -173,6 +173,26 @@ An integrated AI module for smarter recruitment, automated screening, and intell
    VITE_SUPABASE_URL=your-supabase-url
    VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
    ```
+
+### Environment variables (backend + frontend)
+
+This project uses a few `.env` files for different services. The frontend expects Vite-style variables (prefixed with `VITE_`) while the backend and auxiliary services use plain names.
+
+- Primary backend `.env` (located at `ai-resume-scan/.env`) — contains sensitive service keys and API tokens. Example (redacted):
+
+```properties
+# OpenAI API Configuration (do NOT commit your real key)
+OPENAI_API_KEY=your-openai-api-key-here
+
+# Supabase (server) - used by backend services
+SUPABASE_URL=https://your-supabase-project.supabase.co
+SUPABASE_KEY=your-service-role-or-admin-key
+
+# Optional: frontend-compatible environment variables
+VITE_SUPABASE_URL=https://your-supabase-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
+
 
 4. **Database setup**
 
