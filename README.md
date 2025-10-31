@@ -1,15 +1,17 @@
-# Team member 1
+## Team member 1
 - Diksha Khandelwal 
 - diksha1010.dk@gmail.com
 - Amity Univeristy, Noida
-# Team member 2
+## Team member 2
 - Shivika Mittal
 - shivika2934@gmail.com
 - Amity Univeristy, Noida
-# Team member 3
+## Team member 3
 - Vaishnavi Sharma
 - sharma.v2044@gmail.com
 - Amity Univeristy, Noida
+
+[![Watch Demo Video](thumbnail.png)](https://drive.google.com/file/d/1cAsYgQdpsuiNWvW7h0NNZEZ4TeSp8qMi/view?usp=drivesdk)
 
 # Enterprise HRMS Platform
 
